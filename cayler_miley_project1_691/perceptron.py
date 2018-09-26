@@ -1,6 +1,11 @@
 import numpy as np 
 
 
+## Perceptron
+X = np.array([[-2,1],[1,1],[1.5,-0.5],[-2,-1],[-1,-1.5],[2,-2]])
+Y = np.array([[1],[1],[1],[-1],[-1],[-1]])
+
+
 '''
 Basic Requirements:
 '''
