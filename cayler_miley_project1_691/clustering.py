@@ -37,7 +37,7 @@ def K_Means_better(X, K):
 	center_counts = []
 	centers = []
 	error = sys.maxsize
-	for i in range(200):
+	while centers_converged(center_counts) == -1:
 		new_center = K_Means(X, K)
 		centers.append(new_center)
 		error = window_error(centers)
@@ -45,10 +45,7 @@ def K_Means_better(X, K):
 		centers_converged(center_counts)
 
 	mean_centers = np.mean(centers, axis=0)
-	#print(mean_centers)
 	centers = np.asarray(centers)
-	#centers = centers.reshape(600, 2)
-	#print(centers[:,0])
 
 	fig = plt.figure()
 	ax1 = fig.add_subplot(111)
@@ -62,7 +59,7 @@ def K_Means_better(X, K):
 	return mean_centers
 
 
-def init_cluster_centers(X, K):
+def init_cluster_centers(X, K, use_sample=True):
 	centers = []
 
 	while len(centers) < K:
@@ -92,7 +89,6 @@ def compute_cluster_centers(samples, clusters):
 	for cluster in clusters:
 		new_center = np.mean(samples[cluster], axis=0)
 		centers.append(new_center)
-		#print(new_center)
 
 	return centers
 
@@ -121,11 +117,11 @@ def converged(old_clusters, new_clusters):
 
 
 def centers_converged(center_counts):
+	if not center_counts:
+		return -1
 	total_count = 0
 	max_count = 0
 	max_index = -1
-
-	print(center_counts)
 
 	for index, (center, count) in enumerate(center_counts):
 		total_count += count
@@ -133,8 +129,16 @@ def centers_converged(center_counts):
 			max_index = index
 			max_count = count
 		
-	print(max_count/total_count, " shizz")
+	# must run more than 10 trials
+	if total_count < 10:
+		return -1
+
+	print(max_count/total_count, " occurence")
 	if max_count/total_count >= 0.5:
+		return max_index
+
+	# stop running beyond 1000 trials
+	if total_count > 999:
 		return max_index
 
 	return -1
@@ -150,13 +154,10 @@ def update_counts(center_counts, new_center):
 	for index, (center, count) in enumerate(center_counts):
 		total_count += count
 		if np.array_equal(center, new_center):
-			print("Fuck you")
 			center_counts[index][1] = center_counts[index][1] + 1
 			return center_counts
 
 	center_counts.append([new_center, 1])
-
-	print(total_count)
 
 	return center_counts
 
@@ -173,14 +174,12 @@ def window_error(list_of_centers):
 
 	window_error = error/(len(list_of_centers))
 
-	#print(mean_centers, window_error)
-
 	return window_error
 
 
 def main():
-	#K_Means(X_set, 3)
-	K_Means_better(X_set, 3)
+	K_Means(X_set, 3)
+	K_Means_better(X_set, 5)
 
 
 if __name__ == '__main__':

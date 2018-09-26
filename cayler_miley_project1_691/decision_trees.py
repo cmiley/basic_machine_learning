@@ -37,13 +37,19 @@ Y_real = np.array([[1],[1],[1],[1],[1],[1],[1],[1],
 '''
 Basic Requirements:
 '''
-def DT_train_binary(X,Y,max_depth):
+def DT_train_binary(X, Y, max_depth):
+	depth_count = 0
+
 	if(max_depth < 0):
 		# iterate until maximum accuracy reached
-		pass
+		max_depth = min(len(X[0]), len(X)-1)
+		print("Max Depth: ", max_depth)
 
-	for feature in X[0]:
-		print("feature")
+	used_features = []
+
+	tree = choose_best_tree(X, Y, used_features, depth_count, max_depth)
+
+	print(tree)
 
 	for i in range(max_depth):
 		# generate decision trees
@@ -73,9 +79,115 @@ def DT_train_real_best(X_train,Y_train,X_val,Y_val):
 	pass
 
 
+def choose_best_tree(X, Y, feature_indices, current_depth, max_depth, is_binary=True):
+	if is_binary:
+		threshold = 0.5
+
+	print("Y", Y)
+
+	if same_labels(Y):
+		print("same labels")
+		return {"accuracy": 1.0, "output": Y[0][0]}
+	elif same_features(X):
+		print("same features")
+		label, count = highest_count(Y)
+		return {"accuracy": count/len(Y), "output": highest_count(Y)[0]}
+	elif current_depth == max_depth:
+		print("reached max depth")
+		label, count = highest_count(Y)
+		return {"accuracy": count/len(Y), "output": highest_count(Y)[0]}
+
+	best_acc = 0
+
+	if X is None:
+		print("return None")
+		return None
+
+	for f_index in range(len(X[0])):
+		if f_index in feature_indices:
+			pass
+		else:
+			(accuracy, leq_indices, gre_indices) = get_accuracy(X, Y, f_index, threshold)
+			if(accuracy > best_acc):
+				feature_index = f_index
+				best_acc = accuracy
+
+	feature_indices.append(feature_index)
+
+	print("leq indices", leq_indices)
+	lower_tree = choose_best_tree(X[leq_indices], Y[leq_indices], feature_indices, current_depth+1, max_depth, is_binary=is_binary)
+
+	print("gre indices", gre_indices)
+	upper_tree = choose_best_tree(X[gre_indices], Y[gre_indices], feature_indices, current_depth+1, max_depth, is_binary=is_binary)
+
+	tree = {
+		"accuracy": best_acc,
+		"feature": feature_index, 
+		(feature_index, 0): lower_tree,
+		(feature_index, 1): upper_tree
+	}
+
+	return tree
+
+def get_accuracy(samples, labels, feature, threshold):
+	below = []
+	above = []
+	leq_indices = []
+	gre_indices = []
+	correct = {}
+
+	for s_index, sample in enumerate(samples):
+		if sample[feature] <= threshold:
+			below.append(labels[s_index])
+			leq_indices.append(s_index)
+		else:
+			above.append(labels[s_index])
+			gre_indices.append(s_index)
+	correct["leq"] = [below.count(0), below.count(1)]
+	correct["gre"] = [above.count(0), above.count(1)]
+	#print(correct)
+
+	accuracy = max(correct["leq"][0] + correct["gre"][1], correct["leq"][1] + correct["gre"][0])/len(samples) 
+	#print(accuracy)
+
+	return (accuracy, leq_indices, gre_indices)
+
+
+def same_labels(vec):
+	for val in vec:
+		if not np.array_equal(val, vec[0]):
+			return False
+	return True
+
+
+def same_features(X):
+	for i in X:
+		for j in X:
+			if not np.array_equal(X[i], X[j]):
+				return False
+	return True
+
+
+def highest_count(labels):
+	unique, counts = np.unique(labels, return_counts=True)
+
+	if not len(labels):
+		return [None], 0
+
+	print("Labels", labels)
+	max_count = 0
+
+	for index, count in enumerate(counts):
+		if count > max_count:
+			max_count = count
+			label = unique[index]
+
+	return label, max_count
+
+
 def main():
-	print("decision trees")
 	DT_train_binary(X_train_1, Y_train_1, 3)
+	DT_train_binary(X_train_2, Y_train_2, 3)
 
 
 if __name__ == '__main__':
