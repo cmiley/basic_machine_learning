@@ -1,5 +1,4 @@
 import numpy as np
-import math as math
 
 ## K-NN Data
 X_train1 = np.array([[1, 5], [2, 6], [2, 7], [3, 7], [3, 8], [4, 8], [5, 1],
@@ -18,7 +17,6 @@ Basic Requirements:
 
 def KNN_test(X_train, Y_train, X_test, Y_test, K):
     correct = 0.0
-    accuracy = 0.0
 
     for index, point in enumerate(X_test):
         label = test_point(X_train, Y_train, point, K)

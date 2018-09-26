@@ -37,7 +37,7 @@ Basic Requirements:
 '''
 
 
-def DT_train_binary(X, Y, max_depth):
+def DT_train_binary(X, Y, max_depth, FLAG_print=True):
     depth_count = 0
 
     if max_depth < 0:
@@ -48,7 +48,9 @@ def DT_train_binary(X, Y, max_depth):
 
     tree = choose_best_tree(X, Y, used_features, depth_count, max_depth)
 
-    print(tree)
+    if FLAG_print:
+        print(tree)
+
     return tree
 
 
@@ -74,6 +76,7 @@ def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
             output_tree = tree
             best_acc = accuracy
 
+    print(output_tree)
     return output_tree
 
 
@@ -98,11 +101,29 @@ def DT_train_real(X, Y, max_depth):
 
 
 def DT_test_real(X, Y, DT):
-    pass
+    num_correct = 0
+
+    for s_index, sample in enumerate(X):
+        pred = make_prediction(sample, DT)
+        if pred == Y[s_index]:
+            num_correct += 1
+
+    return num_correct / len(X)
 
 
 def DT_train_real_best(X_train, Y_train, X_val, Y_val):
-    pass
+    max_depth = min(len(X_train[0]), len(X_train) - 1)
+    best_acc = 0
+
+    for depth in range(max_depth):
+        tree = DT_train_real(X_train, Y_train, depth)
+        accuracy = DT_test_binary(X_val, Y_val, tree)
+        if accuracy > best_acc:
+            output_tree = tree
+            best_acc = accuracy
+
+    print(output_tree)
+    return output_tree
 
 
 def compute_thresholds(X, f_index):
@@ -148,7 +169,7 @@ def choose_best_tree(X, Y, feature_indices, current_depth, max_depth, is_binary=
 
             for threshold in thresholds:
                 (accuracy, leq_indices, gre_indices) = get_accuracy(X, Y, f_index, threshold)
-                if (accuracy > best_acc):
+                if accuracy > best_acc:
                     feature_index = f_index
                     best_acc = accuracy
                     best_leq_indices = leq_indices
@@ -246,10 +267,12 @@ def make_prediction(sample, tree):
 
 def main():
     tree1 = DT_train_binary(X_train_1, Y_train_1, -1)
-    tree2 = DT_train_binary(X_train_2, Y_train_2, -1)
+    tree2 = DT_train_binary(X_train_2, Y_train_2, 1)
     print(DT_test_binary(X_test_1, Y_test_1, tree1))
     print(DT_test_binary(X_test_2, Y_test_2, tree2))
     tree3 = DT_train_real(X_real, Y_real, -1)
+    print(DT_test_real(X_real, Y_real, tree3))
+    tree4 = DT_train_real_best(X_train_1, Y_train_1, X_test_1, Y_test_1)
 
 
 if __name__ == '__main__':

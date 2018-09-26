@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import sys
+import warnings
 import matplotlib.pyplot as plt
 
 ## K-Means
@@ -18,7 +19,6 @@ Basic Requirements:
 def K_Means(X, K):
     # choose random samples to initialize cluster centers
     centers = init_cluster_centers(X, K)
-    updated_centers = []
 
     updated_clusters = compute_clusters(X, centers)
     stale_clusters = []
@@ -39,27 +39,25 @@ def K_Means(X, K):
 def K_Means_better(X, K):
     center_counts = []
     centers = []
-    error = sys.maxsize
-    while centers_converged(center_counts) == -1:
+    while centers_converged(center_counts) < 0:
         new_center = K_Means(X, K)
         centers.append(new_center)
-        error = window_error(centers)
         center_counts = update_counts(center_counts, new_center)
-        centers_converged(center_counts)
+        index = centers_converged(center_counts)
 
-    mean_centers = np.mean(centers, axis=0)
-    centers = np.asarray(centers)
+    output_centers = center_counts[index][0]
 
-    fig = plt.figure()
-    ax1 = fig.add_subplot(111)
+    # centers = np.asarray(centers)
+    # fig = plt.figure()
+    # ax1 = fig.add_subplot(111)
+    #
+    # plt.scatter(X_set[:, 0], X_set[:, 1], s=3, c='b', label="Training")
+    # plt.scatter(centers[:, 0, 0], centers[:, 0, 1], s=1, c='r', label="Cluster 1")
+    # plt.scatter(centers[:, 1, 0], centers[:, 1, 1], s=1, c='g', label="Cluster 2")
+    # plt.scatter(centers[:, 2, 0], centers[:, 2, 1], s=1, c='m', label="Cluster 3")
+    # plt.show()
 
-    plt.scatter(X_set[:, 0], X_set[:, 1], s=1, c='b', label="Training")
-    plt.scatter(centers[:, 0, 0], centers[:, 0, 1], s=1, c='r', label="Cluster 1")
-    plt.scatter(centers[:, 1, 0], centers[:, 1, 1], s=1, c='g', label="Cluster 2")
-    plt.scatter(centers[:, 2, 0], centers[:, 2, 1], s=1, c='m', label="Cluster 3")
-    plt.show()
-
-    return mean_centers
+    return output_centers
 
 
 def init_cluster_centers(X, K, use_sample=True):
@@ -138,7 +136,6 @@ def centers_converged(center_counts):
     if total_count < 10:
         return -1
 
-    print(max_count / total_count, " occurence")
     if max_count / total_count >= 0.5:
         return max_index
 
@@ -167,25 +164,11 @@ def update_counts(center_counts, new_center):
     return center_counts
 
 
-def rmse(predictions, targets):
-    return np.sqrt(np.mean((predictions - targets) ** 2))
-
-
-def window_error(list_of_centers):
-    mean_centers = np.mean(list_of_centers, axis=0)
-    error = 0
-
-    for centers in list_of_centers:
-        error += rmse(centers, mean_centers)
-
-    window_error = error / (len(list_of_centers))
-
-    return window_error
-
-
 def main():
-    K_Means(X_set, 3)
-    K_Means_better(X_set, 5)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=RuntimeWarning)
+    print(K_Means(X_set, 5))
+    print(K_Means_better(X_set, 5))
 
 
 if __name__ == '__main__':
