@@ -17,6 +17,9 @@ Basic Requirements:
 
 
 def K_Means(X, K):
+    if K > len(X):
+        return None
+
     # choose random samples to initialize cluster centers
     centers = init_cluster_centers(X, K)
 
@@ -167,8 +170,22 @@ def update_counts(center_counts, new_center):
 def main():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=RuntimeWarning)
-    print(K_Means(X_set, 5))
-    print(K_Means_better(X_set, 5))
+    # centers = K_Means(X_set, 3)
+    print("K-means: 2 ", K_Means(X_set, 2))
+    print("K-means: 3 ", K_Means(X_set, 3))
+    print("K-means-better: 2 ", K_Means_better(X_set, 2))
+    print("K-means-better: 3 ", K_Means_better(X_set, 3))
+
+    # centers = np.asarray(centers)
+    # print(centers.shape)
+    # fig = plt.figure()
+    # ax1 = fig.add_subplot(111)
+    #
+    # plt.scatter(X_set[:, 0], X_set[:, 1], s=3, c='b', label="Training")
+    # plt.scatter(centers[0, 0], centers[0, 1], s=10, c='r', label="Cluster 1")
+    # plt.scatter(centers[1, 0], centers[1, 1], s=10, c='g', label="Cluster 2")
+    # plt.scatter(centers[2, 0], centers[2, 1], s=10, c='m', label="Cluster 3")
+    # plt.savefig("K3.png")
 
 
 if __name__ == '__main__':

@@ -76,7 +76,7 @@ def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
             output_tree = tree
             best_acc = accuracy
 
-    print(output_tree)
+    print("Output tree: ", output_tree)
     return output_tree
 
 
@@ -270,6 +270,10 @@ def main():
     tree2 = DT_train_binary(X_train_2, Y_train_2, 1)
     print(DT_test_binary(X_test_1, Y_test_1, tree1))
     print(DT_test_binary(X_test_2, Y_test_2, tree2))
+    tree1_best = DT_train_binary_best(X_train_1, Y_train_1, X_test_1, Y_test_1)
+    tree2_best = DT_train_binary_best(X_train_2, Y_train_2, X_test_2, Y_test_2)
+    print(DT_test_binary(X_test_1, Y_test_1, tree1_best))
+    print(DT_test_binary(X_test_2, Y_test_2, tree2_best))
     tree3 = DT_train_real(X_real, Y_real, -1)
     print(DT_test_real(X_real, Y_real, tree3))
     tree4 = DT_train_real_best(X_train_1, Y_train_1, X_test_1, Y_test_1)

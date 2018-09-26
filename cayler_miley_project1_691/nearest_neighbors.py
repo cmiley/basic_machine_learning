@@ -20,12 +20,11 @@ def KNN_test(X_train, Y_train, X_test, Y_test, K):
 
     for index, point in enumerate(X_test):
         label = test_point(X_train, Y_train, point, K)
-
+        print(label)
         if label == Y_test[index][0]:
             correct += 1
 
     accuracy = correct / len(X_test)
-    print(accuracy)
 
     return accuracy
 
@@ -46,7 +45,6 @@ def choose_K(X_train, Y_train, X_val, Y_val):
             accuracy = new_accuracy
             K = test_K
 
-    print(K)
     return K
 
 
@@ -73,8 +71,10 @@ def L2_norm(point1, point2):
 
 
 def main():
-    KNN_test(X_train1, Y_train1, X_test1, Y_test1, 3)
-    choose_K(X_train1, Y_train1, X_test1, Y_test1)
+    print("K=1: ", KNN_test(X_train1, Y_train1, X_test1, Y_test1, 1))
+    print("K=3: ",KNN_test(X_train1, Y_train1, X_test1, Y_test1, 3))
+    print("K=5: ",KNN_test(X_train1, Y_train1, X_test1, Y_test1, 5))
+    print("Choose K: ",choose_K(X_train1, Y_train1, X_test1, Y_test1))
 
 
 if __name__ == '__main__':
