@@ -3,7 +3,7 @@ import numpy as np
 X1 = np.array([[0, 1], [1, 0], [5, 4], [1, 1], [3, 3], [2, 4], [1, 6]])
 Y1 = np.array([[1], [1], [-1], [1], [-1], [-1], [-1]])
 
-X2 = np.array([[-2, 1], [1, 1], [1.5, -0.5], [-2, 1], [-1, -1.5], [2, -2]])
+X2 = np.array([[-2, 1], [1, 1], [1.5, -0.5], [-2, -1], [-1, -1.5], [2, -2]])
 Y2 = np.array([[1], [1], [1], [-1], [-1], [-1]])
 
 
@@ -19,19 +19,6 @@ def update_weights(sample, label, weights, bias, FLAG_debug=False):
         print("W: {}, B: {}".format(weights, bias))
 
     return weights, bias
-
-
-def converged(w_stale, b_stale, w, b, epoch, max_epochs):
-    if np.any(w == 0) and b == 0:
-        return False
-
-    if np.array_equal(w_stale, w) and b_stale == b:
-        print("Converged at epoch {}".format(epoch))
-        return True
-    elif epoch >= max_epochs:
-        return True
-
-    return False
 
 
 def perceptron_train(X, Y, FLAG_debug=False):
@@ -57,12 +44,14 @@ def perceptron_train(X, Y, FLAG_debug=False):
             if FLAG_debug:
                 print("Converged at epoch: {}".format(epoch))
             break
+        else:
+            if FLAG_debug:
+                print("Not converged at epoch: {}".format(epoch))
 
     if FLAG_debug:
-        print("Debugging...")
         print("W: {}, B: {}".format(w, b))
 
-    return w, b
+    return [w, b]
 
 
 def perceptron_test(X_test, Y_test, w, b, FLAG_debug=False):
@@ -73,17 +62,21 @@ def perceptron_test(X_test, Y_test, w, b, FLAG_debug=False):
         if activation * Y_test[index] > 0:
             correct += 1
 
-    accuracy = correct / X_test.size
+    accuracy = correct / len(X_test)
 
     if FLAG_debug:
+        print("Number correct: {} out of {}".format(correct, len(X_test)))
         print("Testing accuracy: {}".format(accuracy))
 
     return accuracy
 
 
 def main():
-    w, b = perceptron_train(X1, Y1, True)
-    acc = perceptron_test(X1, Y1, w, b, True)
+    w1 = perceptron_train(X1, Y1, True)
+    perceptron_test(X1, Y1, w1[0], w1[1])
+
+    w2 = perceptron_train(X2, Y2, True)
+    perceptron_test(X1, Y1, w2[0], w2[1], True)
 
 
 if __name__ == "__main__":
