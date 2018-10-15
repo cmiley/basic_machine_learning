@@ -26,6 +26,7 @@ def converged(w_stale, b_stale, w, b, epoch, max_epochs):
         return False
 
     if np.array_equal(w_stale, w) and b_stale == b:
+        print("Converged at epoch {}".format(epoch))
         return True
     elif epoch >= max_epochs:
         return True
@@ -37,15 +38,25 @@ def perceptron_train(X, Y, FLAG_debug=False):
     # initialize weights and bias
     w = np.zeros(X[0].size)
     b = 0
-    epoch = 0
     max_epochs = 1000
 
     w_stale = np.zeros(X[0].size)
     b_stale = 0
 
-    while not converged(w_stale, b_stale, w, b, epoch, max_epochs):
+    for epoch in range(max_epochs):
+        w_update = []
         for index, sample in enumerate(X):
             w, b = update_weights(sample, Y[index], w, b)
+            if np.array_equal(w_stale, w) and b_stale == b:
+                w_update.append(True)
+            else:
+                w_update.append(False)
+            w_stale = w
+            b_stale = b
+        if np.all(w_update):
+            if FLAG_debug:
+                print("Converged at epoch: {}".format(epoch))
+            break
 
     if FLAG_debug:
         print("Debugging...")
