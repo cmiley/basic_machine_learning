@@ -72,11 +72,11 @@ def perceptron_test(X_test, Y_test, w, b, FLAG_debug=False):
 
 
 def main():
-    w1 = perceptron_train(X1, Y1, True)
+    w1 = perceptron_train(X1, Y1)
     perceptron_test(X1, Y1, w1[0], w1[1])
 
-    w2 = perceptron_train(X2, Y2, True)
-    perceptron_test(X1, Y1, w2[0], w2[1], True)
+    w2 = perceptron_train(X2, Y2)
+    perceptron_test(X1, Y1, w2[0], w2[1])
 
 
 if __name__ == "__main__":
