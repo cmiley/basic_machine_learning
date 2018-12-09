@@ -1,3 +1,4 @@
+import numpy as np
 
 
 def svm_train_brute(data):
