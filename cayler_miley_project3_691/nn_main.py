@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 
 import nn
 
-GRAD_FLAG = True
+GRAD_FLAG = False
 
 if __name__ == "__main__":
     np.random.seed(0)
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     for i, nn_hdim in enumerate(hidden_layer_dimensions):
         plt.subplot(2, 2, i+1)
         plt.title('HiddenLayerSize{}'.format(nn_hdim))
-        model = nn.build_model(X, y, nn_hdim, print_loss=False, outputs=outputs)
+        model = nn.build_model(X, y, nn_hdim, print_loss=True)
         nn.plot_decision_boundary(lambda x: nn.predict(model, x), X, y)
 
-    plt.show()
+    plt.savefig('Grad{}.png'.format(GRAD_FLAG))
